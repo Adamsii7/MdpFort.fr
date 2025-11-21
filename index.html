@@ -1,29 +1,43 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Générateur de Mots de Passe Sécurisé</title>
-    <link rel="stylesheet" href="style.css">
-</head>
 <body>
 <div class="container">
+    <button id="theme-toggle">🌙 Passer au Sombre</button>
+
     <h1>Générateur de Mot de Passe</h1>
 
-    <input type="text" id="password-output" value="Cliquez pour générer" readonly>
+    <div class="output-container">
+        <input type="text" id="password-output" value="zX_b9!3L@kR0tE4Q" readonly>
+        <button id="copy-btn" title="Copier le mot de passe">Copier</button>
+    </div>
 
     <label for="length">Longueur (8-32) :</label>
-    <input type="number" id="length" min="8" max="32" value="16">
+    <input type="range" id="length" min="8" max="32" value="16" oninput="this.nextElementSibling.value = this.value">
+    <output>16</output>
 
-    <label><input type="checkbox" id="uppercase" checked> Majuscules (A-Z)</label>
-    <label><input type="checkbox" id="lowercase" checked> Minuscules (a-z)</label>
-    <label><input type="checkbox" id="numbers" checked> Chiffres (0-9)</label>
-    <label><input type="checkbox" id="symbols"> Symboles (!@#$)</label>
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="uppercase" checked> Majuscules (A-Z)</label>
+        <label><input type="checkbox" id="lowercase" checked> Minuscules (a-z)</label>
+        <label><input type="checkbox" id="numbers" checked> Chiffres (0-9)</label>
+        <label><input type="checkbox" id="symbols"> Symboles (!@#$)</label>
+    </div>
 
     <button id="generate-btn">Générer un Mot de Passe</button>
 
     <div class="monetization-ad">
+        <p>🔒 **Astuce Sécurité :** Un mot de passe fort est inutile s'il n'est pas stocké en toute sécurité.</p>
+        <p>Utilisez un <a href="[VOTRE_LIEN_AFFILIATION_ICI]" target="_blank">Gestionnaire de Mots de Passe Recommandé</a> pour plus de tranquillité.</p>
     </div>
 </div>
+
+<div id="cookie-banner" class="cookie-banner">
+    <p>
+        Nous utilisons des cookies essentiels pour enregistrer votre préférence de thème (sombre/clair).
+        Aucune donnée personnelle n'est collectée.
+    </p>
+    <div class="cookie-actions">
+        <button id="accept-cookies">Accepter et continuer</button>
+        <a href="#">Politique de Confidentialité</a>
+    </div>
+</div>
+
 <script src="script.js"></script>
 </body>
-</html>

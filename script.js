@@ -1,13 +1,35 @@
-document.getElementById('generate-btn').addEventListener('click', generatePassword);
+document.addEventListener('DOMContentLoaded', () => {
+    // Lie le bouton Générer à la fonction principale
+    document.getElementById('generate-btn').addEventListener('click', generatePassword);
+
+    // Lie le bouton Copier à la fonction de copie
+    document.getElementById('copy-btn').addEventListener('click', copyPassword);
+
+    // Lie le bouton du thème à la fonction de bascule
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+    // Lie le bouton Accepter du bandeau de cookies
+    document.getElementById('accept-cookies').addEventListener('click', acceptCookies);
+
+    // Initialisation au chargement de la page
+    initTheme();
+    initCookieBanner();
+});
+
+
+// =================================================================
+// LOGIQUE PRINCIPALE DU GÉNÉRATEUR
+// =================================================================
 
 function generatePassword() {
-    // 1. Définition des jeux de caractères
+    // ... (Votre logique de génération de mot de passe existante) ...
+    // Le code existant ici est correct et ne nécessite pas de modification majeure
+
     const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
     const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const DIGITS = "0123456789";
     const SYMBOLS = "!@#$%^&*()-_+=<>?";
 
-    // 2. Récupérer les options de l'utilisateur
     const length = parseInt(document.getElementById('length').value);
     const useLowercase = document.getElementById('lowercase').checked;
     const useUppercase = document.getElementById('uppercase').checked;
@@ -23,51 +45,116 @@ function generatePassword() {
 
     const outputElement = document.getElementById('password-output');
 
-    // Vérification d'erreurs
     if (allChars.length === 0 || length <= 0) {
-        outputElement.value = "Erreur: Sélectionnez au moins une option et une longueur valide.";
-        return;
-    }
-
-    if (length < 8 || length > 32) {
-        outputElement.value = "Erreur: Longueur doit être entre 8 et 32.";
+        outputElement.value = "Erreur: Sélectionnez au moins une option.";
         return;
     }
 
     let password = "";
-
-    // 3. Garantir au moins un caractère de chaque type sélectionné
+    // Garantir au moins un caractère de chaque type
     if (useLowercase) password += getRandomChar(LOWERCASE);
     if (useUppercase) password += getRandomChar(UPPERCASE);
     if (useDigits) password += getRandomChar(DIGITS);
     if (useSymbols) password += getRandomChar(SYMBOLS);
 
-    // 4. Remplir le reste du mot de passe
+    // Remplir le reste
     for (let i = password.length; i < length; i++) {
         password += getRandomChar(allChars);
     }
 
-    // 5. Mélanger la chaîne (pour que les caractères obligatoires ne soient pas au début)
     password = shuffleString(password);
-
-    // 6. Afficher le résultat
     outputElement.value = password;
 }
 
-// Fonction utilitaire pour obtenir un caractère aléatoire d'une chaîne
 function getRandomChar(charSet) {
-    // Math.random() génère un nombre entre 0 et 1.
-    // Math.floor() l'arrondit à l'entier inférieur.
     const randomIndex = Math.floor(Math.random() * charSet.length);
     return charSet.charAt(randomIndex);
 }
 
-// Fonction utilitaire pour mélanger une chaîne de caractères
 function shuffleString(str) {
-    let array = str.split(''); // Convertir la chaîne en tableau de caractères
+    let array = str.split('');
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // Échanger les éléments
+        [array[i], array[j]] = [array[j], array[i]];
     }
-    return array.join(''); // Reconvertir le tableau en chaîne
+    return array.join('');
+}
+
+
+// =================================================================
+// FONCTION COPIER (Nouveau)
+// =================================================================
+
+function copyPassword() {
+    const output = document.getElementById('password-output');
+
+    // Utilise l'API du presse-papiers (moderne et sécurisée)
+    navigator.clipboard.writeText(output.value)
+        .then(() => {
+            // Feedback visuel temporaire
+            const copyBtn = document.getElementById('copy-btn');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "Copié!";
+
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 1000); // Rétablit le texte après 1 seconde
+        })
+        .catch(err => {
+            // Fallback (méthode de secours moins fiable)
+            output.select();
+            document.execCommand('copy');
+            alert("Mot de passe copié ! (Méthode de secours)");
+        });
+}
+
+
+// =================================================================
+// GESTION DU THÈME (Nouveau)
+// =================================================================
+
+function initTheme() {
+    // Vérifie la préférence enregistrée ou le mode par défaut du système
+    const savedTheme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        document.getElementById('theme-toggle').textContent = '🌙 Passer au Sombre';
+    } else {
+        document.getElementById('theme-toggle').textContent = '☀️ Passer au Clair';
+    }
+}
+
+function toggleTheme() {
+    const body = document.body;
+    body.classList.toggle('light-theme');
+    const isLight = body.classList.contains('light-theme');
+
+    // Enregistre la préférence
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+
+    // Met à jour le texte du bouton
+    document.getElementById('theme-toggle').textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
+}
+
+
+// =================================================================
+// BANDEAU DE COOKIES (Nouveau)
+// =================================================================
+
+const COOKIE_KEY = 'cookies_accepted';
+
+function initCookieBanner() {
+    // Affiche le bandeau uniquement si l'utilisateur n'a pas encore accepté
+    if (localStorage.getItem(COOKIE_KEY) !== 'true') {
+        document.getElementById('cookie-banner').style.display = 'flex';
+    }
+}
+
+function acceptCookies() {
+    // Enregistre l'acceptation
+    localStorage.setItem(COOKIE_KEY, 'true');
+    // Cache le bandeau
+    document.getElementById('cookie-banner').style.display = 'none';
 }
