@@ -1,6 +1,14 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Mots de Passe Sécurisé</title>
+    <link rel="stylesheet" href="/ProjetGenerateurMPD/style.css">
+</head>
 <body>
 <div class="container">
-    <button id="theme-toggle">🌙 Passer au Sombre</button>
+    <button id="theme-toggle">☀️ Passer au Clair</button>
 
     <h1>Générateur de Mot de Passe</h1>
 
@@ -9,9 +17,8 @@
         <button id="copy-btn" title="Copier le mot de passe">Copier</button>
     </div>
 
-    <label for="length">Longueur (8-32) :</label>
-    <input type="range" id="length" min="8" max="32" value="16" oninput="this.nextElementSibling.value = this.value">
-    <output>16</output>
+    <label for="length">Longueur (<output id="length-output">16</output>) :</label>
+    <input type="range" id="length" min="8" max="32" value="16" oninput="document.getElementById('length-output').textContent = this.value">
 
     <div class="checkbox-group">
         <label><input type="checkbox" id="uppercase" checked> Majuscules (A-Z)</label>
@@ -41,3 +48,4 @@
 
 <script src="script.js"></script>
 </body>
+</html>
