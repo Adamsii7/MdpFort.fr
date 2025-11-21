@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Générateur de Mots de Passe Sécurisé</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Générateur de Mot de Passe</h1>
+
+    <input type="text" id="password-output" value="Cliquez pour générer" readonly>
+
+    <label for="length">Longueur (8-32) :</label>
+    <input type="number" id="length" min="8" max="32" value="16">
+
+    <label><input type="checkbox" id="uppercase" checked> Majuscules (A-Z)</label>
+    <label><input type="checkbox" id="lowercase" checked> Minuscules (a-z)</label>
+    <label><input type="checkbox" id="numbers" checked> Chiffres (0-9)</label>
+    <label><input type="checkbox" id="symbols"> Symboles (!@#$)</label>
+
+    <button id="generate-btn">Générer un Mot de Passe</button>
+
+    <div class="monetization-ad">
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
