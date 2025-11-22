@@ -1,31 +1,25 @@
-/* Importation de la police Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-/* --- Définition des Variables de Thème (Défaut : Sombre) --- */
 :root {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-color: #f8fafc;
-    --primary-color: #3b82f6;
-    --secondary-color: #94a3b8;
-    --input-bg: #475569;
-    --output-color: #a7f3d0;
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --bg-color: #1a1a2e;
+    --container-bg: #22223b;
+    --text-color: #e5e5e5;
+    --input-bg: #3c3c5a;
+    --button-primary: #8d40ff;
+    --button-hover: #b380ff;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --link-color: #4ddbff;
 }
 
-/* --- Thème Clair (Override) --- */
 body.light-theme {
-    --bg-color: #f1f5f9;
-    --card-bg: #ffffff;
-    --text-color: #1e293b;
-    --primary-color: #1d4ed8;
-    --secondary-color: #64748b;
-    --input-bg: #f8fafc;
-    --output-color: #059669;
+    --bg-color: #f4f4f9;
+    --container-bg: #ffffff;
+    --text-color: #333333;
+    --input-bg: #e0e0e0;
+    --button-primary: #007bff;
+    --button-hover: #0056b3;
     --shadow-color: rgba(0, 0, 0, 0.1);
+    --link-color: #0056b3;
 }
 
-/* --- Styles Généraux --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -33,7 +27,7 @@ body.light-theme {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
@@ -45,185 +39,224 @@ body {
 }
 
 .container {
-    background-color: var(--card-bg);
-    padding: 30px;
+    background-color: var(--container-bg);
+    padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px var(--shadow-color);
+    box-shadow: 0 4px 20px var(--shadow-color);
     width: 100%;
     max-width: 450px;
+    position: relative;
 }
 
 h1 {
-    color: var(--primary-color);
+    text-align: center;
     margin-bottom: 25px;
     font-size: 1.8em;
+    color: var(--text-color);
+}
+
+/* --- OUTPUT ET COPIE --- */
+.output-container {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#password-output {
+    flex-grow: 1;
+    padding: 12px;
+    font-size: 1em;
+    border: none;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    cursor: default;
+}
+
+#copy-btn {
+    background-color: var(--button-primary);
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#copy-btn:hover {
+    background-color: var(--button-hover);
+}
+
+/* --- INDICATEUR DE FORCE --- */
+.password-strength-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    height: 15px;
+    background-color: var(--input-bg);
+    border-radius: 5px;
+    padding: 0 5px;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.strength-label {
+    font-weight: bold;
+    font-size: 0.9em;
+    min-width: 60px;
+    color: var(--text-color);
+}
+
+/* Couleurs de la barre */
+.weak { background-color: #ff4d4d; /* Rouge */ }
+.medium { background-color: #ffc107; /* Jaune */ }
+.strong { background-color: #4CAF50; /* Vert */ }
+.very-strong { background-color: #0080ff; /* Bleu */ }
+
+
+/* --- OPTIONS ET BOUTONS --- */
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+#generate-btn {
+    width: 100%;
+    background-color: var(--button-primary);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#generate-btn:hover {
+    background-color: var(--button-hover);
+}
+
+/* --- MONÉTISATION ET SEO --- */
+.monetization-ad, .seo-text {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid var(--input-bg);
+}
+
+.monetization-ad p {
+    font-size: 0.9em;
+    line-height: 1.4;
     text-align: center;
 }
 
-/* --- Bouton de Thème (Toggle) --- */
+.monetization-ad a, .seo-text a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.monetization-ad a:hover, .seo-text a:hover {
+    color: var(--button-primary);
+}
+
+.seo-text h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+/* --- BOUTON DE THÈME --- */
 #theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     background: none;
-    border: 1px solid var(--secondary-color);
-    color: var(--secondary-color);
-    padding: 8px 15px;
-    border-radius: 20px;
+    border: none;
+    color: var(--text-color);
     cursor: pointer;
-    font-size: 0.8em;
-    float: right;
-    margin-bottom: 20px;
-    transition: all 0.2s;
+    font-size: 0.9em;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 #theme-toggle:hover {
     background-color: var(--input-bg);
 }
 
-/* --- Conteneur de Sortie (Champ + Bouton Copier) --- */
-.output-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-#password-output {
-    flex-grow: 1;
-    padding: 15px;
-    border: 2px solid var(--input-bg);
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: 700;
-    color: var(--output-color);
-    text-align: center;
-    background-color: var(--input-bg);
-    cursor: default;
-}
-
-#copy-btn {
-    padding: 15px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s;
-    flex-shrink: 0;
-}
-
-#copy-btn:hover {
-    background-color: #2563eb;
-}
-
-/* --- Options et Longueur --- */
-label {
-    display: block;
-    text-align: left;
-    margin-top: 15px;
-    font-weight: 600;
-    font-size: 0.9em;
-}
-
-#length-output {
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.checkbox-group {
-    margin: 20px 0 30px;
-}
-
-.checkbox-group label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.checkbox-group input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-/* Le slider de longueur */
-input[type="range"] {
-    width: 80%;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-
-/* --- Bouton Générer --- */
-#generate-btn {
-    width: 100%;
-    padding: 15px;
-    background-color: #10b981;
-    color: var(--card-bg);
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background-color 0.3s;
-}
-
-#generate-btn:hover {
-    background-color: #059669;
-}
-
-/* --- Zone de Monétisation --- */
-.monetization-ad {
-    margin-top: 30px;
-    padding: 15px;
-    background-color: var(--input-bg);
-    border-radius: 8px;
-    font-size: 0.9em;
-    text-align: left;
-    border-left: 5px solid var(--primary-color);
-}
-
-.monetization-ad a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-/* --- BANDEAU DE COOKIES --- */
+/* --- COOKIE BANNER --- */
 .cookie-banner {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 15px 30px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-    display: none;
+    background-color: var(--container-bg);
+    border-top: 1px solid var(--input-bg);
+    padding: 15px 20px;
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--input-bg);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
 }
 
-.cookie-actions button {
-    background-color: var(--primary-color);
+.cookie-banner p {
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.cookie-actions button, .cookie-actions a {
+    background-color: var(--button-primary);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 8px 15px;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: 600;
-    margin-left: 10px;
-}
-
-.cookie-actions a {
-    color: var(--secondary-color);
     text-decoration: none;
     font-size: 0.9em;
+    margin-left: 10px;
+    transition: background-color 0.3s;
 }
 
-/* --- Responsive (Mobile) --- */
-@media (max-width: 600px) {
+.cookie-actions button:hover, .cookie-actions a:hover {
+    background-color: var(--button-hover);
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 500px) {
     .container {
-        padding: 20px;
+        padding: 25px 20px;
     }
     h1 {
-        font-size: 1.5em;
+        font-size: 1.6em;
+    }
+    .output-container {
+        flex-direction: column;
+    }
+    #password-output {
+        border-radius: 8px 8px 0 0;
+    }
+    #copy-btn {
+        border-radius: 0 0 8px 8px;
     }
     .cookie-banner {
         flex-direction: column;
@@ -232,5 +265,12 @@ input[type="range"] {
     }
     .cookie-actions {
         margin-top: 10px;
+        display: flex;
+        width: 100%;
+    }
+    .cookie-actions button, .cookie-actions a {
+        flex-grow: 1;
+        text-align: center;
+        margin: 0 5px 0 0;
     }
 }

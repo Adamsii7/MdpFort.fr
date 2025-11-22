@@ -24,6 +24,11 @@
         <button id="copy-btn" title="Copier le mot de passe généré">Copier</button>
     </div>
 
+    <div class="password-strength-container">
+        <div id="strength-bar" class="strength-bar"></div>
+        <span id="strength-label" class="strength-label">Faible</span>
+    </div>
+
     <label for="length">Longueur (<output id="length-output">16</output>) :</label>
     <input type="range" id="length" min="8" max="32" value="16" oninput="document.getElementById('length-output').textContent = this.value">
 
@@ -36,18 +41,17 @@
 
     <button id="generate-btn">Générer un Mot de Passe</button>
 
-    <div class="seo-text">
-        <h2>Pourquoi choisir un mot de passe fort ?</h2>
-        <p>
-            Un mot de passe aléatoire de 15 caractères ou plus est essentiel pour une sécurité maximale. Notre outil crée des combinaisons uniques de lettres, chiffres et symboles pour déjouer les attaques par force brute. Protégez-vous contre les cybermenaces en utilisant un mot de passe différent et ultra-sécurisé pour chaque compte.
-        </p>
-    </div>
-
     <div class="monetization-ad">
         <p>🔒 **Astuce Sécurité :** Un mot de passe fort est inutile s'il n'est pas stocké en toute sécurité.</p>
         <p>Utilisez un <a href="[VOTRE_LIEN_AFFILIATION_ICI]" target="_blank">Gestionnaire de Mots de Passe Recommandé</a> pour plus de tranquillité.</p>
     </div>
 
+    <div class="seo-text">
+        <h2>Pourquoi choisir un mot de passe fort ?</h2>
+        <p>
+            Un mot de passe aléatoire de 15 caractères ou plus est essentiel pour une sécurité maximale. Notre outil crée des combinaisons uniques de lettres, chiffres et symboles pour déjouer les attaques par force brute et vous protéger contre les fuites de données.
+        </p>
+    </div>
 </div>
 
 <div id="cookie-banner" class="cookie-banner">
@@ -57,7 +61,7 @@
     </p>
     <div class="cookie-actions">
         <button id="accept-cookies">Accepter et continuer</button>
-        <a href="#">Politique de Confidentialité</a>
+        <a href="#" target="_blank">Politique de Confidentialité</a>
     </div>
 </div>
 

@@ -1,148 +1,174 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Lie les événements aux boutons
-    document.getElementById('generate-btn').addEventListener('click', generatePassword);
-    document.getElementById('copy-btn').addEventListener('click', copyPassword);
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    document.getElementById('accept-cookies').addEventListener('click', acceptCookies);
+    // --- Initialisation des éléments ---
+    const passwordOutput = document.getElementById('password-output');
+    const lengthInput = document.getElementById('length');
+    const generateBtn = document.getElementById('generate-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const themeToggle = document.getElementById('theme-toggle');
 
-    // Initialisation au chargement de la page
-    initTheme();
-    initCookieBanner();
-});
+    // Checkboxes
+    const uppercase = document.getElementById('uppercase');
+    const lowercase = document.getElementById('lowercase');
+    const numbers = document.getElementById('numbers');
+    const symbols = document.getElementById('symbols');
+
+    // Strength Indicator
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthLabel = document.getElementById('strength-label');
 
 
-// =================================================================
-// LOGIQUE PRINCIPALE DU GÉNÉRATEUR
-// =================================================================
+    // --- 1. GESTION DE LA FORCE DU MOT DE PASSE ---
 
-function generatePassword() {
-    const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
-    const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const DIGITS = "0123456789";
-    const SYMBOLS = "!@#$%^&*()-_+=<>?";
+    function checkPasswordStrength(password) {
+        let score = 0;
+        const length = password.length;
+        const hasLower = /[a-z]/.test(password);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSymbol = /[^a-zA-Z0-9]/.test(password);
 
-    // Récupère les options
-    const length = parseInt(document.getElementById('length').value);
-    const useLowercase = document.getElementById('lowercase').checked;
-    const useUppercase = document.getElementById('uppercase').checked;
-    const useDigits = document.getElementById('numbers').checked;
-    const useSymbols = document.getElementById('symbols').checked;
+        // Score basé sur la longueur (jusqu'à 60 points)
+        if (length >= 8) score += 20;
+        if (length >= 12) score += 20;
+        if (length >= 16) score += 20;
 
-    let allChars = "";
+        // Score basé sur la variété (jusqu'à 40 points)
+        const charTypes = [hasLower, hasUpper, hasNumber, hasSymbol].filter(Boolean).length;
+        score += (charTypes * 10);
 
-    if (useLowercase) allChars += LOWERCASE;
-    if (useUppercase) allChars += UPPERCASE;
-    if (useDigits) allChars += DIGITS;
-    if (useSymbols) allChars += SYMBOLS;
-
-    const outputElement = document.getElementById('password-output');
-
-    if (allChars.length === 0 || length < 8 || length > 32) {
-        outputElement.value = "Erreur: Longueur invalide ou aucune option sélectionnée.";
-        return;
+        // Limite à 100
+        if (score > 100) score = 100;
+        return score;
     }
 
-    let password = "";
+    function updateStrengthIndicator(score) {
+        let strength = 'Très Faible';
+        let className = 'weak';
 
-    // Garantir au moins un caractère de chaque type sélectionné
-    if (useLowercase) password += getRandomChar(LOWERCASE);
-    if (useUppercase) password += getRandomChar(UPPERCASE);
-    if (useDigits) password += getRandomChar(DIGITS);
-    if (useSymbols) password += getRandomChar(SYMBOLS);
+        if (score >= 80) {
+            strength = 'Très Fort';
+            className = 'very-strong';
+        } else if (score >= 60) {
+            strength = 'Fort';
+            className = 'strong';
+        } else if (score >= 40) {
+            strength = 'Moyen';
+            className = 'medium';
+        }
 
-    // Remplir le reste
-    for (let i = password.length; i < length; i++) {
-        password += getRandomChar(allChars);
+        strengthBar.className = `strength-bar ${className}`;
+        strengthBar.style.width = `${score}%`;
+        strengthLabel.textContent = strength;
     }
 
-    // Mélanger et afficher
-    password = shuffleString(password);
-    outputElement.value = password;
-}
 
-function getRandomChar(charSet) {
-    // Utilise Math.random() pour la génération d'index
-    const randomIndex = Math.floor(Math.random() * charSet.length);
-    return charSet.charAt(randomIndex);
-}
+    // --- 2. LOGIQUE DE GÉNÉRATION ET COPIE ---
 
-function shuffleString(str) {
-    let array = str.split('');
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    function generatePassword() {
+        const len = lengthInput.value;
+        let charset = '';
+        let password = '';
+
+        if (uppercase.checked) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (lowercase.checked) charset += 'abcdefghijklmnopqrstuvwxyz';
+        if (numbers.checked) charset += '0123456789';
+        if (symbols.checked) charset += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+
+        if (charset === '') {
+            passwordOutput.value = 'Sélectionnez au moins un type de caractère.';
+            updateStrengthIndicator(0);
+            return;
+        }
+
+        // Assurer au moins un de chaque type sélectionné
+        const charGenerators = [];
+        if (uppercase.checked) charGenerators.push(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]);
+        if (lowercase.checked) charGenerators.push(() => 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)]);
+        if (numbers.checked) charGenerators.push(() => '0123456789'[Math.floor(Math.random() * 10)]);
+        if (symbols.checked) charGenerators.push(() => '!@#$%^&*()_+~`|}{[]:;?><,./-='[Math.floor(Math.random() * 32)]);
+
+        // Générer le mot de passe en s'assurant qu'il contient au moins un de chaque type sélectionné
+        for (let i = 0; i < len; i++) {
+            if (i < charGenerators.length) {
+                password += charGenerators[i]();
+            } else {
+                password += charset[Math.floor(Math.random() * charset.length)];
+            }
+        }
+
+        // Mélanger le mot de passe pour garantir l'aléatoire
+        password = password.split('').sort(() => 0.5 - Math.random()).join('');
+
+        passwordOutput.value = password;
+
+        // Met à jour l'indicateur de force
+        const strengthScore = checkPasswordStrength(password);
+        updateStrengthIndicator(strengthScore);
     }
-    return array.join('');
-}
 
+    // Événements
+    generateBtn.addEventListener('click', generatePassword);
+    lengthInput.addEventListener('input', generatePassword);
+    [uppercase, lowercase, numbers, symbols].forEach(checkbox => {
+        checkbox.addEventListener('change', generatePassword);
+    });
 
-// =================================================================
-// FONCTION COPIER
-// =================================================================
+    copyBtn.addEventListener('click', () => {
+        if (passwordOutput.value && passwordOutput.value !== 'Sélectionnez au moins un type de caractère.') {
+            navigator.clipboard.writeText(passwordOutput.value).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copié!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1500);
+            });
+        }
+    });
 
-function copyPassword() {
-    const output = document.getElementById('password-output');
+    // --- 3. GESTION DU THÈME ---
 
-    // Utilise l'API du presse-papiers (moderne)
-    navigator.clipboard.writeText(output.value)
-        .then(() => {
-            const copyBtn = document.getElementById('copy-btn');
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = "Copié!";
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.textContent = '🌙 Passer au Sombre';
+        } else {
+            document.body.classList.remove('light-theme');
+            themeToggle.textContent = '☀️ Passer au Clair';
+        }
+    }
 
-            setTimeout(() => {
-                copyBtn.textContent = originalText;
-            }, 1000);
-        })
-        .catch(err => {
-            // Fallback (pour les navigateurs très anciens ou si l'API est bloquée)
-            output.select();
-            document.execCommand('copy');
-            alert("Mot de passe copié ! (Méthode de secours)");
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isLight = document.body.classList.contains('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        themeToggle.textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
+    });
+
+    // --- 4. GESTION DES COOKIES (Local Storage) ---
+
+    const cookieBanner = document.getElementById('cookie-banner');
+    const acceptButton = document.getElementById('accept-cookies');
+
+    function loadCookieConsent() {
+        const consentGiven = localStorage.getItem('cookiesAccepted');
+
+        if (consentGiven === 'true') {
+            cookieBanner.style.display = 'none';
+        } else {
+            cookieBanner.style.display = 'flex';
+        }
+    }
+
+    if (acceptButton) {
+        acceptButton.addEventListener('click', function() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            cookieBanner.style.display = 'none';
         });
-}
-
-
-// =================================================================
-// GESTION DU THÈME
-// =================================================================
-
-function initTheme() {
-    const savedTheme = localStorage.getItem('theme') ||
-        (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        document.getElementById('theme-toggle').textContent = '🌙 Passer au Sombre';
-    } else {
-        document.getElementById('theme-toggle').textContent = '☀️ Passer au Clair';
     }
-}
 
-function toggleTheme() {
-    const body = document.body;
-    body.classList.toggle('light-theme');
-    const isLight = body.classList.contains('light-theme');
-
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-
-    document.getElementById('theme-toggle').textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
-}
-
-
-// =================================================================
-// BANDEAU DE COOKIES
-// =================================================================
-
-const COOKIE_KEY = 'cookies_accepted';
-
-function initCookieBanner() {
-    if (localStorage.getItem(COOKIE_KEY) !== 'true') {
-        document.getElementById('cookie-banner').style.display = 'flex';
-    }
-}
-
-function acceptCookies() {
-    localStorage.setItem(COOKIE_KEY, 'true');
-    document.getElementById('cookie-banner').style.display = 'none';
-}
+    // --- Initialisation au chargement de la page ---
+    loadTheme();
+    loadCookieConsent();
+    generatePassword(); // Génère le mot de passe initial et affiche sa force
+});
