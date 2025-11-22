@@ -1,14 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Lie le bouton Générer à la fonction principale
+    // Lie les événements aux boutons
     document.getElementById('generate-btn').addEventListener('click', generatePassword);
-
-    // Lie le bouton Copier à la fonction de copie
     document.getElementById('copy-btn').addEventListener('click', copyPassword);
-
-    // Lie le bouton du thème à la fonction de bascule
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-
-    // Lie le bouton Accepter du bandeau de cookies
     document.getElementById('accept-cookies').addEventListener('click', acceptCookies);
 
     // Initialisation au chargement de la page
@@ -22,14 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // =================================================================
 
 function generatePassword() {
-    // ... (Votre logique de génération de mot de passe existante) ...
-    // Le code existant ici est correct et ne nécessite pas de modification majeure
-
     const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
     const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const DIGITS = "0123456789";
     const SYMBOLS = "!@#$%^&*()-_+=<>?";
 
+    // Récupère les options
     const length = parseInt(document.getElementById('length').value);
     const useLowercase = document.getElementById('lowercase').checked;
     const useUppercase = document.getElementById('uppercase').checked;
@@ -45,13 +37,14 @@ function generatePassword() {
 
     const outputElement = document.getElementById('password-output');
 
-    if (allChars.length === 0 || length <= 0) {
-        outputElement.value = "Erreur: Sélectionnez au moins une option.";
+    if (allChars.length === 0 || length < 8 || length > 32) {
+        outputElement.value = "Erreur: Longueur invalide ou aucune option sélectionnée.";
         return;
     }
 
     let password = "";
-    // Garantir au moins un caractère de chaque type
+
+    // Garantir au moins un caractère de chaque type sélectionné
     if (useLowercase) password += getRandomChar(LOWERCASE);
     if (useUppercase) password += getRandomChar(UPPERCASE);
     if (useDigits) password += getRandomChar(DIGITS);
@@ -62,11 +55,13 @@ function generatePassword() {
         password += getRandomChar(allChars);
     }
 
+    // Mélanger et afficher
     password = shuffleString(password);
     outputElement.value = password;
 }
 
 function getRandomChar(charSet) {
+    // Utilise Math.random() pour la génération d'index
     const randomIndex = Math.floor(Math.random() * charSet.length);
     return charSet.charAt(randomIndex);
 }
@@ -82,26 +77,25 @@ function shuffleString(str) {
 
 
 // =================================================================
-// FONCTION COPIER (Nouveau)
+// FONCTION COPIER
 // =================================================================
 
 function copyPassword() {
     const output = document.getElementById('password-output');
 
-    // Utilise l'API du presse-papiers (moderne et sécurisée)
+    // Utilise l'API du presse-papiers (moderne)
     navigator.clipboard.writeText(output.value)
         .then(() => {
-            // Feedback visuel temporaire
             const copyBtn = document.getElementById('copy-btn');
             const originalText = copyBtn.textContent;
             copyBtn.textContent = "Copié!";
 
             setTimeout(() => {
                 copyBtn.textContent = originalText;
-            }, 1000); // Rétablit le texte après 1 seconde
+            }, 1000);
         })
         .catch(err => {
-            // Fallback (méthode de secours moins fiable)
+            // Fallback (pour les navigateurs très anciens ou si l'API est bloquée)
             output.select();
             document.execCommand('copy');
             alert("Mot de passe copié ! (Méthode de secours)");
@@ -110,11 +104,10 @@ function copyPassword() {
 
 
 // =================================================================
-// GESTION DU THÈME (Nouveau)
+// GESTION DU THÈME
 // =================================================================
 
 function initTheme() {
-    // Vérifie la préférence enregistrée ou le mode par défaut du système
     const savedTheme = localStorage.getItem('theme') ||
         (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
 
@@ -131,30 +124,25 @@ function toggleTheme() {
     body.classList.toggle('light-theme');
     const isLight = body.classList.contains('light-theme');
 
-    // Enregistre la préférence
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 
-    // Met à jour le texte du bouton
     document.getElementById('theme-toggle').textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
 }
 
 
 // =================================================================
-// BANDEAU DE COOKIES (Nouveau)
+// BANDEAU DE COOKIES
 // =================================================================
 
 const COOKIE_KEY = 'cookies_accepted';
 
 function initCookieBanner() {
-    // Affiche le bandeau uniquement si l'utilisateur n'a pas encore accepté
     if (localStorage.getItem(COOKIE_KEY) !== 'true') {
         document.getElementById('cookie-banner').style.display = 'flex';
     }
 }
 
 function acceptCookies() {
-    // Enregistre l'acceptation
     localStorage.setItem(COOKIE_KEY, 'true');
-    // Cache le bandeau
     document.getElementById('cookie-banner').style.display = 'none';
 }
