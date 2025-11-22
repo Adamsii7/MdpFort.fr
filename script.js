@@ -17,9 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const strengthLabel = document.getElementById('strength-label');
 
 
-    // --- 1. GESTION DE LA FORCE DU MOT DE PASSE ---
+    // --- 1. GESTION DE LA FORCE DU MOT DE PASSE (Révisé pour 100% et 5 niveaux) ---
 
     function checkPasswordStrength(password) {
+        if (!password) return 0;
+
         let score = 0;
         const length = password.length;
         const hasLower = /[a-z]/.test(password);
@@ -27,33 +29,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasNumber = /[0-9]/.test(password);
         const hasSymbol = /[^a-zA-Z0-9]/.test(password);
 
-        // Score basé sur la longueur (jusqu'à 60 points)
-        if (length >= 8) score += 20;
-        if (length >= 12) score += 20;
-        if (length >= 16) score += 20;
+        // Score basé sur la longueur (Jusqu'à 50 points)
+        if (length >= 8) score += 10;
+        if (length >= 12) score += 15;
+        if (length >= 16) score += 25; // Maximum 50 points ici
 
-        // Score basé sur la variété (jusqu'à 40 points)
+        // Score basé sur la variété (Jusqu'à 50 points)
         const charTypes = [hasLower, hasUpper, hasNumber, hasSymbol].filter(Boolean).length;
-        score += (charTypes * 10);
+        score += (charTypes * 12.5); // 4 types * 12.5 = 50 points maximum
 
         // Limite à 100
         if (score > 100) score = 100;
-        return score;
+        return Math.floor(score);
     }
 
     function updateStrengthIndicator(score) {
         let strength = 'Très Faible';
-        let className = 'weak';
+        let className = 'very-weak';
 
-        if (score >= 80) {
-            strength = 'Très Fort';
+        // Nouvelles catégories
+        if (score >= 85) { // Atteignable avec 16+ char et 4 types
+            strength = 'Ultra Fort';
             className = 'very-strong';
-        } else if (score >= 60) {
+        } else if (score >= 65) {
             strength = 'Fort';
             className = 'strong';
         } else if (score >= 40) {
             strength = 'Moyen';
             className = 'medium';
+        } else if (score >= 20) {
+            strength = 'Faible';
+            className = 'weak';
         }
 
         strengthBar.className = `strength-bar ${className}`;
@@ -106,7 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStrengthIndicator(strengthScore);
     }
 
-    // Événements
+    // --- 3. GESTION DES ÉVÉNEMENTS (Ajout de la saisie manuelle) ---
+
+    // Événement pour la saisie manuelle de mot de passe (analyse de force)
+    passwordOutput.addEventListener('input', () => {
+        const manualPassword = passwordOutput.value;
+        const strengthScore = checkPasswordStrength(manualPassword);
+        updateStrengthIndicator(strengthScore);
+    });
+
+    // Événements de génération (bouton, longueur, checkboxes)
     generateBtn.addEventListener('click', generatePassword);
     lengthInput.addEventListener('input', generatePassword);
     [uppercase, lowercase, numbers, symbols].forEach(checkbox => {
@@ -125,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 3. GESTION DU THÈME ---
+    // --- 4. GESTION DU THÈME ET COOKIES ---
 
     function loadTheme() {
         const savedTheme = localStorage.getItem('theme');
@@ -144,8 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         themeToggle.textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
     });
-
-    // --- 4. GESTION DES COOKIES (Local Storage) ---
 
     const cookieBanner = document.getElementById('cookie-banner');
     const acceptButton = document.getElementById('accept-cookies');
