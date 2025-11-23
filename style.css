@@ -160,6 +160,26 @@ input[type="range"] {
     background-color: var(--button-hover);
 }
 
+/* --- LIEN DE CONVERSION (Ajouté) --- */
+.security-alert {
+    display: block;
+    text-align: center;
+    background-color: #FFC107; /* Couleur jaune d'alerte */
+    color: #333;
+    padding: 15px 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+}
+
+.security-alert:hover {
+    background-color: #e0a800;
+}
+
 /* --- MONÉTISATION ET SEO --- */
 .monetization-ad, .seo-text {
     margin-top: 25px;
