@@ -266,8 +266,8 @@ input[type="range"] {
 
 /* --- MODALE DE CONFIDENTIALITÉ (CORRIGÉ POUR CENTRAGE FIXE) --- */
 .modal {
-    display: none;
-    position: fixed; /* Reste fixe même si la page défile */
+    display: none; /* L'état initial DOIT être 'none' */
+    position: fixed;
     z-index: 1001;
     left: 0;
     top: 0;
@@ -275,8 +275,7 @@ input[type="range"] {
     height: 100%;
     background-color: rgba(0,0,0,0.7);
 
-    /* Flexbox pour le centrage parfait */
-    display: flex;
+    /* Ces règles s'appliquent seulement quand le JS met display: flex */
     align-items: center;
     justify-content: center;
 }
@@ -380,7 +379,6 @@ input[type="range"] {
         margin: 0 5px 0 0;
     }
     .modal-content {
-        /* Centrage Flexbox gère mieux les petits écrans */
         width: 90%;
     }
     #open-settings-btn {
