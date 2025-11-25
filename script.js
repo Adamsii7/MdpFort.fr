@@ -16,12 +16,109 @@ document.addEventListener('DOMContentLoaded', () => {
     const strengthBar = document.getElementById('strength-bar');
     const strengthLabel = document.getElementById('strength-label');
 
+    // Cookie & Modal Elements
+    const cookieBanner = document.getElementById('cookie-banner');
+    const acceptButton = document.getElementById('accept-cookies');
+    const privacyModal = document.getElementById('privacy-modal');
+    const openModalBtn = document.getElementById('open-privacy-modal');
+    const closeModalBtn = document.querySelector('#privacy-modal .close-btn');
+    const openSettingsBtn = document.getElementById('open-settings-btn');
 
-    // --- 1. GESTION DE LA FORCE DU MOT DE PASSE (Révisé pour 100% et 5 niveaux) ---
+
+    // ----------------------------------------------------------------------
+    // --- 1. GESTION DU THÈME, COOKIES ET MODALE (Fiabilisé) ---
+    // ----------------------------------------------------------------------
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.textContent = '🌙 Passer au Sombre';
+        } else {
+            document.body.classList.remove('light-theme');
+            themeToggle.textContent = '☀️ Passer au Clair';
+        }
+    }
+
+    function updateSettingsButtonVisibility() {
+        // Affiche le bouton flottant UNIQUEMENT si le consentement a été donné
+        const consentGiven = localStorage.getItem('cookiesAccepted') === 'true';
+        if (openSettingsBtn) {
+            openSettingsBtn.style.display = consentGiven ? 'flex' : 'none';
+        }
+    }
+
+    function loadCookieConsent() {
+        const consentGiven = localStorage.getItem('cookiesAccepted');
+
+        if (cookieBanner) {
+            if (consentGiven === 'true') {
+                cookieBanner.style.display = 'none';
+            } else {
+                cookieBanner.style.display = 'flex'; // Affichage si pas encore accepté
+            }
+        }
+        updateSettingsButtonVisibility(); // Mise à jour de la visibilité du bouton flottant
+    }
+
+    // Gestion du clic pour ACCEPTER
+    if (acceptButton) {
+        acceptButton.addEventListener('click', function() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            if (cookieBanner) {
+                cookieBanner.style.display = 'none';
+            }
+            updateSettingsButtonVisibility();
+        });
+    }
+
+    // Logique pour ouvrir la MODALE DE CONFIDENTIALITÉ
+    if (openModalBtn) {
+        openModalBtn.addEventListener('click', () => {
+            if (privacyModal) privacyModal.style.display = 'block';
+        });
+    }
+
+    // Logique pour fermer la MODALE
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            if (privacyModal) privacyModal.style.display = 'none';
+        });
+    }
+
+    // Fermeture de la modale en cliquant en dehors
+    window.addEventListener('click', (event) => {
+        if (event.target == privacyModal) {
+            privacyModal.style.display = 'none';
+        }
+    });
+
+    // Logique du bouton FLOTTANT (Réinitialiser/Rouvrir le bandeau de cookies)
+    if (openSettingsBtn) {
+        openSettingsBtn.addEventListener('click', () => {
+            localStorage.removeItem('cookiesAccepted'); // Réinitialiser le consentement
+            if (cookieBanner) {
+                cookieBanner.style.display = 'flex'; // Réafficher la bannière
+            }
+            updateSettingsButtonVisibility(); // Masquer le bouton flottant
+        });
+    }
+
+    // Gestion du changement de thème
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isLight = document.body.classList.contains('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        themeToggle.textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
+    });
+
+
+    // ----------------------------------------------------------------------
+    // --- 2. GESTION DE LA FORCE DU MOT DE PASSE ---
+    // ----------------------------------------------------------------------
 
     function checkPasswordStrength(password) {
         if (!password) return 0;
-
         let score = 0;
         const length = password.length;
         const hasLower = /[a-z]/.test(password);
@@ -29,16 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasNumber = /[0-9]/.test(password);
         const hasSymbol = /[^a-zA-Z0-9]/.test(password);
 
-        // Score basé sur la longueur (Jusqu'à 50 points)
         if (length >= 8) score += 10;
         if (length >= 12) score += 15;
-        if (length >= 16) score += 25; // Maximum 50 points ici
+        if (length >= 16) score += 25;
 
-        // Score basé sur la variété (Jusqu'à 50 points)
         const charTypes = [hasLower, hasUpper, hasNumber, hasSymbol].filter(Boolean).length;
-        score += (charTypes * 12.5); // 4 types * 12.5 = 50 points maximum
+        score += (charTypes * 12.5);
 
-        // Limite à 100
         if (score > 100) score = 100;
         return Math.floor(score);
     }
@@ -47,8 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let strength = 'Très Faible';
         let className = 'very-weak';
 
-        // Nouvelles catégories
-        if (score >= 85) { // Atteignable avec 16+ char et 4 types
+        if (score >= 85) {
             strength = 'Ultra Fort';
             className = 'very-strong';
         } else if (score >= 65) {
@@ -68,7 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- 2. LOGIQUE DE GÉNÉRATION ET COPIE ---
+    // ----------------------------------------------------------------------
+    // --- 3. LOGIQUE DE GÉNÉRATION ET COPIE ---
+    // ----------------------------------------------------------------------
 
     function generatePassword() {
         const len = lengthInput.value;
@@ -86,14 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Assurer au moins un de chaque type sélectionné
         const charGenerators = [];
         if (uppercase.checked) charGenerators.push(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]);
         if (lowercase.checked) charGenerators.push(() => 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)]);
         if (numbers.checked) charGenerators.push(() => '0123456789'[Math.floor(Math.random() * 10)]);
         if (symbols.checked) charGenerators.push(() => '!@#$%^&*()_+~`|}{[]:;?><,./-='[Math.floor(Math.random() * 32)]);
 
-        // Générer le mot de passe en s'assurant qu'il contient au moins un de chaque type sélectionné
         for (let i = 0; i < len; i++) {
             if (i < charGenerators.length) {
                 password += charGenerators[i]();
@@ -102,26 +195,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Mélanger le mot de passe pour garantir l'aléatoire
         password = password.split('').sort(() => 0.5 - Math.random()).join('');
-
         passwordOutput.value = password;
 
-        // Met à jour l'indicateur de force
         const strengthScore = checkPasswordStrength(password);
         updateStrengthIndicator(strengthScore);
     }
 
-    // --- 3. GESTION DES ÉVÉNEMENTS (Ajout de la saisie manuelle) ---
-
-    // Événement pour la saisie manuelle de mot de passe (analyse de force)
+    // --- 4. GESTION DES ÉVÉNEMENTS ---
     passwordOutput.addEventListener('input', () => {
         const manualPassword = passwordOutput.value;
         const strengthScore = checkPasswordStrength(manualPassword);
         updateStrengthIndicator(strengthScore);
     });
 
-    // Événements de génération (bouton, longueur, checkboxes)
     generateBtn.addEventListener('click', generatePassword);
     lengthInput.addEventListener('input', generatePassword);
     [uppercase, lowercase, numbers, symbols].forEach(checkbox => {
@@ -140,48 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 4. GESTION DU THÈME ET COOKIES ---
-
-    function loadTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-theme');
-            themeToggle.textContent = '🌙 Passer au Sombre';
-        } else {
-            document.body.classList.remove('light-theme');
-            themeToggle.textContent = '☀️ Passer au Clair';
-        }
-    }
-
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        const isLight = document.body.classList.contains('light-theme');
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        themeToggle.textContent = isLight ? '🌙 Passer au Sombre' : '☀️ Passer au Clair';
-    });
-
-    const cookieBanner = document.getElementById('cookie-banner');
-    const acceptButton = document.getElementById('accept-cookies');
-
-    function loadCookieConsent() {
-        const consentGiven = localStorage.getItem('cookiesAccepted');
-
-        if (consentGiven === 'true') {
-            cookieBanner.style.display = 'none';
-        } else {
-            cookieBanner.style.display = 'flex';
-        }
-    }
-
-    if (acceptButton) {
-        acceptButton.addEventListener('click', function() {
-            localStorage.setItem('cookiesAccepted', 'true');
-            cookieBanner.style.display = 'none';
-        });
-    }
-
     // --- Initialisation au chargement de la page ---
     loadTheme();
     loadCookieConsent();
-    generatePassword(); // Génère le mot de passe initial et affiche sa force
+    generatePassword();
 });
