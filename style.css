@@ -162,7 +162,7 @@ input[type="range"] {
 .security-alert {
     display: block;
     text-align: center;
-    background-color: #FFC107; /* Jaune d'alerte */
+    background-color: #FFC107;
     color: #333;
     padding: 15px 20px;
     margin: 20px auto;
@@ -264,30 +264,37 @@ input[type="range"] {
     background-color: var(--button-hover);
 }
 
-/* --- MODALE DE CONFIDENTIALITÉ --- */
+/* --- MODALE DE CONFIDENTIALITÉ (CORRIGÉ POUR CENTRAGE FIXE) --- */
 .modal {
     display: none;
-    position: fixed;
+    position: fixed; /* Reste fixe même si la page défile */
     z-index: 1001;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
     background-color: rgba(0,0,0,0.7);
+
+    /* Flexbox pour le centrage parfait */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
     background-color: var(--container-bg);
     color: var(--text-color);
-    margin: 15% auto;
     padding: 25px;
     border: 1px solid #888;
-    width: 80%;
+    width: 90%;
     max-width: 500px;
     border-radius: 10px;
     position: relative;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+
+    /* Gestion du défilement interne */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-content h2 {
@@ -373,7 +380,7 @@ input[type="range"] {
         margin: 0 5px 0 0;
     }
     .modal-content {
-        margin: 5% auto;
+        /* Centrage Flexbox gère mieux les petits écrans */
         width: 90%;
     }
     #open-settings-btn {

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ----------------------------------------------------------------------
-    // --- 1. GESTION DU THÈME, COOKIES ET MODALE (Fiabilisé) ---
+    // --- 1. GESTION DU THÈME, COOKIES ET MODALE ---
     // ----------------------------------------------------------------------
 
     function loadTheme() {
@@ -55,10 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (consentGiven === 'true') {
                 cookieBanner.style.display = 'none';
             } else {
-                cookieBanner.style.display = 'flex'; // Affichage si pas encore accepté
+                // Affiche la bannière si pas encore accepté
+                cookieBanner.style.display = 'flex';
             }
         }
-        updateSettingsButtonVisibility(); // Mise à jour de la visibilité du bouton flottant
+        updateSettingsButtonVisibility();
     }
 
     // Gestion du clic pour ACCEPTER
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logique pour ouvrir la MODALE DE CONFIDENTIALITÉ
     if (openModalBtn) {
         openModalBtn.addEventListener('click', () => {
-            if (privacyModal) privacyModal.style.display = 'block';
+            if (privacyModal) privacyModal.style.display = 'flex'; // Utilise 'flex' pour le centrage
         });
     }
 
